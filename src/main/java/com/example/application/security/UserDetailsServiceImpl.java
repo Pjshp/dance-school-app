@@ -23,20 +23,29 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("No user present with username: " + username);
-        } else {
-            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getHashedPassword(),
-                    getAuthorities(user));
-        }
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Pobranie użytkownika z bazy danych po emailu
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user present with email: " + email));
+
+        // Zwracamy obiekt Spring Security User
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getHashedPassword(),
+                getAuthorities(user)
+        );
     }
 
     private static List<GrantedAuthority> getAuthorities(User user) {
-        return user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+        // Jeśli user.getRole() to String:
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+
+        // Jeśli user.getRole() to kolekcja (np. List<String>):
+        /*
+        return user.getRole().stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
-
+        */
     }
-
 }
+

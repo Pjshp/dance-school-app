@@ -2,17 +2,24 @@ package com.example.application.services;
 
 import com.example.application.data.User;
 import com.example.application.data.UserRepository;
+
+import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserService {
 
     private final UserRepository repository;
 
+    @Autowired
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
@@ -41,4 +48,8 @@ public class UserService {
         return (int) repository.count();
     }
 
+    public Optional<User> findUserByEmail(String email) {
+        // Zmieniamy 'findByUsername' na 'findByEmail'
+        return repository.findByEmail(email);
+    }
 }
