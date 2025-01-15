@@ -1,6 +1,8 @@
 package com.example.application.views.stronaglownapracownika;
 
+import com.example.application.data.Course;
 import com.example.application.data.User;
+import com.example.application.services.CourseService;
 import com.example.application.services.UserService;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -28,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
+import java.util.List;
+
 @PageTitle("Strona Główna Pracownika")
 @Route("strona-glowna-pracownika")
 @Menu(order = 2, icon = LineAwesomeIconUrl.HOME_SOLID)
@@ -35,41 +39,52 @@ import org.vaadin.lineawesome.LineAwesomeIconUrl;
 @Uses(Icon.class)
 public class StronaGlownaPracownikaView extends Composite<VerticalLayout> {
 
-    public StronaGlownaPracownikaView() {
+    private final UserService userService;
+    private final CourseService courseService;
+
+    private final H5 instructorField = new H5();
+    private final H5 priceField = new H5();
+    private final Grid<User> multiSelectGrid = new Grid<>(User.class);
+
+    @Autowired
+    public StronaGlownaPracownikaView(UserService userService, CourseService courseService) {
+        this.userService = userService;
+        this.courseService = courseService;
+
         Tabs tabs = new Tabs();
         VerticalLayout layoutColumn2 = new VerticalLayout();
-        H3 h3 = new H3();
+        H3 courseNameField = new H3();
         FormLayout formLayout2Col = new FormLayout();
-        H5 h5 = new H5();
-        H5 h52 = new H5();
-        H5 h53 = new H5();
-        Grid multiSelectGrid = new Grid(User.class);
+        H5 groupSizeField = new H5();
         HorizontalLayout layoutRow = new HorizontalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         Button buttonPrimary = new Button();
         Button buttonSecondary = new Button();
         Button buttonTertiary = new Button();
         VerticalLayout layoutColumn3 = new VerticalLayout();
-        H3 h32 = new H3();
-        TextField textField = new TextField();
+        H3 h32 = new H3("Edycja należności uczestnika");
+        TextField textField = new TextField("Wprowadź nową należność");
+
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().setJustifyContentMode(JustifyContentMode.START);
         getContent().setAlignItems(Alignment.CENTER);
+
         tabs.setWidth("100%");
-        setTabsSampleData(tabs);
+        setTabsFromCourses(tabs, courseNameField, groupSizeField);
+
         layoutColumn2.setWidth("100%");
         layoutColumn2.setMaxWidth("800px");
         layoutColumn2.setHeight("min-content");
-        h3.setText("Nazwa zajęć");
-        h3.setWidth("100%");
+        courseNameField.setText("Nazwa zajęć");
+        courseNameField.setWidth("100%");
         formLayout2Col.setWidth("100%");
-        h5.setText("Prowadzący");
-        h5.setWidth("max-content");
-        h52.setText("Kwota za miesiąc");
-        h52.setWidth("max-content");
-        h53.setText("Ilość osób w grupie: x");
-        h53.setWidth("max-content");
+        instructorField.setText("Prowadzący");
+        instructorField.setWidth("max-content");
+        priceField.setText("Kwota za miesiąc");
+        priceField.setWidth("max-content");
+        groupSizeField.setText("Ilość osób w grupie: x");
+        groupSizeField.setWidth("max-content");
         multiSelectGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         multiSelectGrid.setWidth("100%");
         multiSelectGrid.getStyle().set("flex-grow", "0");
@@ -93,17 +108,14 @@ public class StronaGlownaPracownikaView extends Composite<VerticalLayout> {
         layoutColumn3.setWidth("100%");
         layoutColumn3.setMaxWidth("800px");
         layoutColumn3.getStyle().set("flex-grow", "1");
-        h32.setText("Edycja należności uczestnika");
-        h32.setWidth("max-content");
-        textField.setLabel("Wprowadź nową należność");
-        textField.setWidth("min-content");
+
         getContent().add(tabs);
         getContent().add(layoutColumn2);
-        layoutColumn2.add(h3);
+        layoutColumn2.add(courseNameField);
         layoutColumn2.add(formLayout2Col);
-        formLayout2Col.add(h5);
-        formLayout2Col.add(h52);
-        formLayout2Col.add(h53);
+        formLayout2Col.add(instructorField);
+        formLayout2Col.add(priceField);
+        formLayout2Col.add(groupSizeField);
         layoutColumn2.add(multiSelectGrid);
         layoutColumn2.add(layoutRow);
         layoutRow.add(layoutRow2);
@@ -113,20 +125,35 @@ public class StronaGlownaPracownikaView extends Composite<VerticalLayout> {
         getContent().add(layoutColumn3);
         layoutColumn3.add(h32);
         layoutColumn3.add(textField);
+
+        updateCourseDetails(courseService.findAll().get(0), courseNameField, groupSizeField);
     }
 
-    private void setTabsSampleData(Tabs tabs) {
-        tabs.add(new Tab("Dashboard"));
-        tabs.add(new Tab("Payment"));
-        tabs.add(new Tab("Shipping"));
+    private void setTabsFromCourses(Tabs tabs, H3 courseNameField, H5 groupSizeField) {
+        List<Course> courses = courseService.findAll();
+        for (Course course : courses) {
+            Tab courseTab = new Tab(course.getCourseName());
+            tabs.add(courseTab);
+            tabs.addSelectedChangeListener(event -> {
+                Tab selectedTab = event.getSelectedTab();
+                if (selectedTab.equals(courseTab)) {
+                    updateCourseDetails(course, courseNameField, groupSizeField);
+                }
+            });
+        }
     }
 
-    private void setGridSampleData(Grid grid) {
+    private void updateCourseDetails(Course course, H3 courseNameField, H5 groupSizeField) {
+        courseNameField.setText(course.getCourseName());
+        instructorField.setText("Prowadzący: " + course.getTeacher().getFirstName() + " " + course.getTeacher().getLastName());
+        priceField.setText("Kwota za miesiąc: " + course.getPrice());
+        //groupSizeField.setText("Ilość osób w grupie: " + course.getUsers().size());
+        // Update other details if necessary
+    }
+
+    private void setGridSampleData(Grid<User> grid) {
         grid.setItems(query -> userService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
     }
-
-    @Autowired()
-    private UserService userService;
 }

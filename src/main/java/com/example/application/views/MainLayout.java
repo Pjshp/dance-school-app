@@ -2,6 +2,10 @@ package com.example.application.views;
 
 import com.example.application.data.User;
 import com.example.application.security.AuthenticatedUser;
+import com.example.application.views.formularzrejestracji.FormularzRejestracjiView;
+import com.example.application.views.listazajec.ListaZajecView;
+import com.example.application.views.stronaglownaklienta.StronaGlownaKlientaView;
+import com.example.application.views.stronaglownapracownika.StronaGlownaPracownikaView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -25,6 +29,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
@@ -73,14 +78,24 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        List<MenuEntry> menuEntries = MenuConfiguration.getMenuEntries();
-        menuEntries.forEach(entry -> {
-            if (entry.icon() != null) {
-                nav.addItem(new SideNavItem(entry.title(), entry.path(), new SvgIcon(entry.icon())));
-            } else {
-                nav.addItem(new SideNavItem(entry.title(), entry.path()));
+        Optional<User> maybeUser = authenticatedUser.get();
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            String role = user.getRole().name();
+
+            // Widoki dla zalogowanych użytkowników
+
+
+            if ("USER".equals(role)) {
+                nav.addItem(new SideNavItem("Strona Główna Klienta", StronaGlownaKlientaView.class));
+                nav.addItem(new SideNavItem("Lista Zajęć", ListaZajecView.class));
+            } else if ("STAFF".equals(role)) {
+                nav.addItem(new SideNavItem("Strona Główna Pracownika", StronaGlownaPracownikaView.class));
             }
-        });
+        } else {
+            // Widoki dla niezalogowanych użytkowników
+            nav.addItem(new SideNavItem("Formularz Rejestracji", FormularzRejestracjiView.class));
+        }
 
         return nav;
     }

@@ -28,8 +28,8 @@
 //        layoutColumn2.setWidth("100%");
 //        layoutColumn2.getStyle().set("flex-grow", "1");
 //        layoutColumn2.setAlignSelf(FlexComponent.Alignment.CENTER, loginForm);
-//        loginForm.setWidth("min-content");
-//        loginForm.setMaxWidth("800px");
+////        loginForm.setWidth("min-content");
+////        loginForm.setMaxWidth("800px");
 //        buttonSecondary.setText("Sign in");
 //        layoutColumn2.setAlignSelf(FlexComponent.Alignment.CENTER, buttonSecondary);
 //        buttonSecondary.setWidth("min-content");

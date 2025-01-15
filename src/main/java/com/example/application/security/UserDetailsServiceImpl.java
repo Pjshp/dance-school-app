@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // Zwracamy obiekt Spring Security User
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
-                user.getHashedPassword(),
+                user.getPassword(),
                 getAuthorities(user)
         );
     }

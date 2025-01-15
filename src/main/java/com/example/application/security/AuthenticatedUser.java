@@ -19,13 +19,27 @@ public class AuthenticatedUser {
         this.authenticationContext = authenticationContext;
     }
 
+//    @Transactional
+//    public Optional<User> get() {
+//        return authenticationContext.getAuthenticatedUser(UserDetails.class)
+//                .flatMap(userDetails -> userRepository.findByEmail(userDetails.getUsername())); // Zmieniono na findByEmail
+//    }
     @Transactional
     public Optional<User> get() {
-        return authenticationContext.getAuthenticatedUser(UserDetails.class)
-                .flatMap(userDetails -> userRepository.findByEmail(userDetails.getUsername())); // Zmieniono na findByEmail
+        Optional<UserDetails> userDetailsOptional = authenticationContext.getAuthenticatedUser(UserDetails.class);
+        if (userDetailsOptional.isPresent()) {
+            UserDetails userDetails = userDetailsOptional.get();
+            System.out.println("Zalogowany użytkownik: " + userDetails.getUsername());
+            return userRepository.findByEmail(userDetails.getUsername());
+        } else {
+            System.out.println("Brak zalogowanego użytkownika w AuthenticationContext");
+            return Optional.empty();
+        }
     }
 
     public void logout() {
         authenticationContext.logout();
     }
+
+
 }

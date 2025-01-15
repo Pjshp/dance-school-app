@@ -19,7 +19,7 @@ import jakarta.annotation.security.PermitAll;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 @PageTitle("Strona Główna Klienta")
-@Route("strona-glowna-klienta")
+@Route(value = "strona-glowna-klienta")
 @Menu(order = 4, icon = LineAwesomeIconUrl.HOME_SOLID)
 @PermitAll
 public class StronaGlownaKlientaView extends Composite<VerticalLayout> {
@@ -92,5 +92,9 @@ public class StronaGlownaKlientaView extends Composite<VerticalLayout> {
         layoutRow.add(buttonSecondary);
         layoutColumn2.add(hr);
         layoutColumn2.add(buttonPrimary2);
+
+        buttonPrimary2.addClickListener(event -> {
+            buttonPrimary2.getUI().ifPresent(ui -> ui.navigate("lista-zajec"));
+        });
     }
 }

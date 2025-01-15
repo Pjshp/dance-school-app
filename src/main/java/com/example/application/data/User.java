@@ -26,7 +26,7 @@ public class User {
     @NotNull
     private String email;
     @JsonIgnore
-    private String hashedPassword;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @NotNull

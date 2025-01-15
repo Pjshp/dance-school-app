@@ -1,5 +1,6 @@
 package com.example.application.data;
 
+import com.example.application.data.Teacher;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -9,9 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface TeacherRepository extends JpaRepository<Teacher, Long>, JpaSpecificationExecutor<Teacher> {
 
-    Optional<User> findByEmail(String email);
-
-
+    List<Teacher> findAll();
 }
