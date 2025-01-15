@@ -1,0 +1,23 @@
+-- INSERT INTO application_user (
+--     email,
+--     hashed_password,
+--     role,
+--     guardian_first_name,
+--     guardian_last_name,
+--     phone,
+--     child_first_name,
+--     child_last_name,
+--     birth_date
+-- ) VALUES (
+--              'user@example.com',
+--              '$2a$10$xdbKoM48VySZqVSU/cSlVeJn0Z04XCZ7KZBjUBC00eKo5uLswyOpe',
+--              'USER',
+--              'John',
+--              'Normal',
+--              '123456789',
+--              'ChildName1',
+--              'ChildSurname1',
+--              '2010-04-15'
+--          );
+
+

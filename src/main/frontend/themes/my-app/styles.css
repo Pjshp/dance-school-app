@@ -1,0 +1,30 @@
+@import url('./main-layout.css');
+@import url('./views/logowanie-view.css');
+@import url('./views/strona-główna-klienta-view.css');    html {
+      --lumo-shade-5pct: rgba(0, 15, 8, 0.05);
+      --lumo-shade-10pct: rgba(0, 15, 8, 0.1);
+      --lumo-shade-20pct: rgba(0, 15, 8, 0.2);
+      --lumo-shade-30pct: rgba(0, 15, 8, 0.3);
+      --lumo-shade-40pct: rgba(0, 15, 8, 0.4);
+      --lumo-shade-50pct: rgba(0, 15, 8, 0.5);
+      --lumo-shade-60pct: rgba(0, 15, 8, 0.6);
+      --lumo-shade-70pct: rgba(0, 15, 8, 0.7);
+      --lumo-shade-80pct: rgba(0, 15, 8, 0.8);
+      --lumo-shade-90pct: rgba(0, 15, 8, 0.9);
+      --lumo-primary-color-50pct: rgba(28, 55, 56, 0.5);
+      --lumo-primary-color-10pct: rgba(28, 55, 56, 0.1);
+      --lumo-error-color-50pct: rgba(77, 72, 71, 0.5);
+      --lumo-error-color-10pct: rgba(77, 72, 71, 0.1);
+      --lumo-success-color-50pct: rgba(139, 170, 173, 0.5);
+      --lumo-success-color-10pct: rgba(139, 170, 173, 0.1);
+      --lumo-shade: rgb(0, 15, 8);
+      --lumo-primary-color: rgb(28, 55, 56);
+      --lumo-primary-text-color: rgb(28, 55, 56);
+      --lumo-error-color: rgb(77, 72, 71);
+      --lumo-error-text-color: rgb(77, 72, 71);
+      --lumo-success-color: rgb(139, 170, 173);
+      --lumo-success-text-color: rgb(139, 170, 173);
+      --lumo-base-color: rgb(250, 250, 250);
+      --lumo-body-text-color: rgb(0, 15, 8);
+
+    }
