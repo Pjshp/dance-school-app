@@ -18,6 +18,7 @@ public class LoginView extends VerticalLayout {
 
         LoginForm loginForm = new LoginForm();
         loginForm.setAction("login");
+        loginForm.setForgotPasswordButtonVisible(false);
 
         add(new H1("Dance School App Login"), loginForm);
     }

@@ -4,34 +4,25 @@ import com.example.application.data.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.formularzrejestracji.FormularzRejestracjiView;
 import com.example.application.views.listazajec.ListaZajecView;
+import com.example.application.views.login.LoginView;
 import com.example.application.views.stronaglownaklienta.StronaGlownaKlientaView;
 import com.example.application.views.stronaglownapracownika.StronaGlownaPracownikaView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.server.menu.MenuConfiguration;
-import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -94,6 +85,7 @@ public class MainLayout extends AppLayout {
             }
         } else {
             // Widoki dla niezalogowanych użytkowników
+            nav.addItem(new SideNavItem("Strona logowania", LoginView.class));
             nav.addItem(new SideNavItem("Formularz Rejestracji", FormularzRejestracjiView.class));
         }
 
