@@ -2,6 +2,7 @@ package com.example.application.services;
 
 import com.example.application.data.Course;
 import com.example.application.data.CourseRepository;
+import com.example.application.data.Teacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,9 @@ public class CourseService {
 
     public Optional<Course> findById(Long id) {
         return repository.findById(id);
+    }
+
+    public Course save(Course course) {
+        return repository.save(course);
     }
 }

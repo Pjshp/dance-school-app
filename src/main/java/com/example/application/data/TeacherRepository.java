@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface TeacherRepository extends JpaRepository<Teacher, Long>, JpaSpecificationExecutor<Teacher> {
 
     List<Teacher> findAll();
+    Optional<Teacher> findByLastName(String lastName);
 }

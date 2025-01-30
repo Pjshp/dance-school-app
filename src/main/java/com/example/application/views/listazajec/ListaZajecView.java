@@ -2,6 +2,10 @@ package com.example.application.views.listazajec;
 
 import com.example.application.data.Course;
 import com.example.application.data.CourseRepository;
+import com.example.application.data.EnrollmentRepository;
+import com.example.application.data.User;
+import com.example.application.security.AuthenticatedUser;
+import com.example.application.services.EnrollmentService;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -9,6 +13,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -22,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 import java.util.List;
+import java.util.Optional;
 
 @PageTitle("Lista Zajęć")
 @Route("lista-zajec")
@@ -30,10 +36,16 @@ import java.util.List;
 public class ListaZajecView extends Composite<VerticalLayout> {
 
     private final CourseRepository courseRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final EnrollmentService enrollmentService;
+    private final AuthenticatedUser authenticatedUser;
 
     @Autowired
-    public ListaZajecView(CourseRepository courseRepository) {
+    public ListaZajecView(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository, EnrollmentService enrollmentService, AuthenticatedUser authenticatedUser) {
         this.courseRepository = courseRepository;
+        this.enrollmentRepository = enrollmentRepository;
+        this.enrollmentService = enrollmentService;
+        this.authenticatedUser = authenticatedUser;
 
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
@@ -84,6 +96,21 @@ public class ListaZajecView extends Composite<VerticalLayout> {
             Button buttonPrimary = new Button("Zapisz się");
             buttonPrimary.setWidth("min-content");
             buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            buttonPrimary.addClickListener(event -> {
+                Optional<User> authenticatedUserOptional = authenticatedUser.get();
+                if (authenticatedUserOptional.isPresent()) {
+                    User user = authenticatedUserOptional.get();
+                    boolean alreadyEnrolled = enrollmentService.isUserEnrolledInCourse(user, course);
+                    if (alreadyEnrolled) {
+                        Notification.show("Jesteś już zapisany na te zajęcia.");
+                    } else {
+                        enrollmentService.enrollUserInCourse(user, course);
+                        Notification.show("Zapisano na zajęcia: " + course.getCourseName());
+                    }
+                } else {
+                    Notification.show("Nie udało się zapisać na zajęcia. Użytkownik nie jest zalogowany.");
+                }
+            });
 
             Button buttonSecondary = new Button("Więcej informacji");
             buttonSecondary.setWidth("min-content");

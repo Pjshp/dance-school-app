@@ -74,6 +74,8 @@ public class FormularzRejestracjiView extends Composite<VerticalLayout> {
             user.setChildFirstName(childFirstNameField.getValue());
             user.setChildLastName(childLastNameField.getValue());
 
+
+
             // Parsowanie daty urodzenia dziecka
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             try {

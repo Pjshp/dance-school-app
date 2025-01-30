@@ -3,6 +3,7 @@ package com.example.application.views.stronaglownapracownika;
 import com.example.application.data.Course;
 import com.example.application.data.User;
 import com.example.application.services.CourseService;
+import com.example.application.services.EnrollmentService;
 import com.example.application.services.UserService;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @PageTitle("Strona Główna Pracownika")
 @Route("strona-glowna-pracownika")
@@ -41,92 +43,119 @@ public class StronaGlownaPracownikaView extends Composite<VerticalLayout> {
 
     private final UserService userService;
     private final CourseService courseService;
+    private final EnrollmentService enrollmentService;
 
     private final H5 instructorField = new H5();
     private final H5 priceField = new H5();
-    private final Grid<User> multiSelectGrid = new Grid<>(User.class);
+    private final Grid<User> grid = new Grid<>(User.class);
 
     @Autowired
-    public StronaGlownaPracownikaView(UserService userService, CourseService courseService) {
+    public StronaGlownaPracownikaView(UserService userService, CourseService courseService, EnrollmentService enrollmentService) {
         this.userService = userService;
         this.courseService = courseService;
+        this.enrollmentService = enrollmentService;
 
-        Tabs tabs = new Tabs();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        H3 courseNameField = new H3();
-        FormLayout formLayout2Col = new FormLayout();
-        H5 groupSizeField = new H5();
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
-        Button buttonPrimary = new Button();
-        Button buttonSecondary = new Button();
-        Button buttonTertiary = new Button();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        H3 h32 = new H3("Edycja należności uczestnika");
-        TextField textField = new TextField("Wprowadź nową należność");
+        try {
+            Tabs tabs = new Tabs();
+            VerticalLayout layoutColumn2 = new VerticalLayout();
+            H3 courseNameField = new H3();
+            FormLayout formLayout2Col = new FormLayout();
+            H5 groupSizeField = new H5();
+            HorizontalLayout layoutRow = new HorizontalLayout();
+            HorizontalLayout layoutRow2 = new HorizontalLayout();
+            Button buttonPrimary = new Button();
+            Button buttonSecondary = new Button();
+            Button buttonTertiary = new Button();
+            VerticalLayout layoutColumn3 = new VerticalLayout();
+            H3 h32 = new H3("Edycja należności uczestnika");
+            TextField textField = new TextField("Wprowadź nową należność");
+            Button buttonChange = new Button();
 
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        getContent().setJustifyContentMode(JustifyContentMode.START);
-        getContent().setAlignItems(Alignment.CENTER);
+            getContent().setWidth("100%");
+            getContent().getStyle().set("flex-grow", "1");
+            getContent().setJustifyContentMode(JustifyContentMode.START);
+            getContent().setAlignItems(Alignment.CENTER);
 
-        tabs.setWidth("100%");
-        setTabsFromCourses(tabs, courseNameField, groupSizeField);
+            tabs.setWidth("100%");
+            setTabsFromCourses(tabs, courseNameField, groupSizeField);
 
-        layoutColumn2.setWidth("100%");
-        layoutColumn2.setMaxWidth("800px");
-        layoutColumn2.setHeight("min-content");
-        courseNameField.setText("Nazwa zajęć");
-        courseNameField.setWidth("100%");
-        formLayout2Col.setWidth("100%");
-        instructorField.setText("Prowadzący");
-        instructorField.setWidth("max-content");
-        priceField.setText("Kwota za miesiąc");
-        priceField.setWidth("max-content");
-        groupSizeField.setText("Ilość osób w grupie: x");
-        groupSizeField.setWidth("max-content");
-        multiSelectGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        multiSelectGrid.setWidth("100%");
-        multiSelectGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(multiSelectGrid);
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
-        layoutRow2.addClassName(Gap.MEDIUM);
-        layoutRow2.setWidth("100%");
-        layoutRow2.getStyle().set("flex-grow", "1");
-        buttonPrimary.setText("Pokaż skład grupy");
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonSecondary.setText("Edytuj należność uczestnika");
-        buttonSecondary.setWidth("min-content");
-        buttonTertiary.setText("Usuń uczestnika z grupy");
-        buttonTertiary.setWidth("min-content");
-        buttonTertiary.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        layoutColumn3.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutColumn3);
-        layoutColumn3.setWidth("100%");
-        layoutColumn3.setMaxWidth("800px");
-        layoutColumn3.getStyle().set("flex-grow", "1");
+            layoutColumn2.setWidth("100%");
+            layoutColumn2.setMaxWidth("800px");
+            layoutColumn2.setHeight("min-content");
+            courseNameField.setText("Nazwa zajęć");
+            courseNameField.setWidth("100%");
+            formLayout2Col.setWidth("100%");
+            instructorField.setText("Prowadzący");
+            instructorField.setWidth("max-content");
+            priceField.setText("Kwota za miesiąc");
+            priceField.setWidth("max-content");
+            groupSizeField.setText("Ilość osób w grupie: x");
+            groupSizeField.setWidth("max-content");
+            //multiSelectGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+            grid.setWidth("100%");
+            grid.getStyle().set("flex-grow", "0");
+            layoutRow.addClassName(Gap.MEDIUM);
+            layoutRow.setWidth("100%");
+            layoutRow.getStyle().set("flex-grow", "1");
+            layoutRow2.addClassName(Gap.MEDIUM);
+            layoutRow2.setWidth("100%");
+            layoutRow2.getStyle().set("flex-grow", "1");
+            buttonPrimary.setText("Pokaż skład grupy");
+            buttonPrimary.setWidth("min-content");
+            buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            buttonSecondary.setText("Edytuj należność uczestnika");
+            buttonSecondary.setWidth("min-content");
+            buttonTertiary.setText("Usuń uczestnika z grupy");
+            buttonTertiary.setWidth("min-content");
+            buttonTertiary.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            layoutColumn3.setWidthFull();
+            getContent().setFlexGrow(1.0, layoutColumn3);
+            layoutColumn3.setWidth("100%");
+            layoutColumn3.setMaxWidth("800px");
+            layoutColumn3.getStyle().set("flex-grow", "1");
 
-        getContent().add(tabs);
-        getContent().add(layoutColumn2);
-        layoutColumn2.add(courseNameField);
-        layoutColumn2.add(formLayout2Col);
-        formLayout2Col.add(instructorField);
-        formLayout2Col.add(priceField);
-        formLayout2Col.add(groupSizeField);
-        layoutColumn2.add(multiSelectGrid);
-        layoutColumn2.add(layoutRow);
-        layoutRow.add(layoutRow2);
-        layoutRow2.add(buttonPrimary);
-        layoutRow2.add(buttonSecondary);
-        layoutRow2.add(buttonTertiary);
-        getContent().add(layoutColumn3);
-        layoutColumn3.add(h32);
-        layoutColumn3.add(textField);
+            buttonChange.setText("Ustaw wpisaną należność");
+            buttonChange.setWidth("min-content");
+            buttonChange.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        updateCourseDetails(courseService.findAll().get(0), courseNameField, groupSizeField);
+            getContent().add(tabs);
+            getContent().add(layoutColumn2);
+            layoutColumn2.add(courseNameField);
+            layoutColumn2.add(formLayout2Col);
+            formLayout2Col.add(instructorField);
+            formLayout2Col.add(priceField);
+            formLayout2Col.add(groupSizeField);
+            layoutColumn2.add(grid);
+            layoutColumn2.add(layoutRow);
+            layoutRow.add(layoutRow2);
+            layoutRow2.add(buttonPrimary);
+            layoutRow2.add(buttonSecondary);
+            layoutRow2.add(buttonTertiary);
+            getContent().add(layoutColumn3);
+            layoutColumn3.add(h32);
+            layoutColumn3.add(textField);
+            layoutColumn3.add(buttonChange);
+
+            h32.setVisible(false);
+            textField.setVisible(false);
+            buttonChange.setVisible(false);
+
+            List<Course> courses = courseService.findAll();
+            if (!courses.isEmpty()) {
+                updateCourseDetails(courses.get(0), courseNameField, groupSizeField);
+            }
+
+            buttonSecondary.addClickListener(event -> {
+                boolean isVisible = textField.isVisible();
+                textField.setVisible(!isVisible);
+                h32.setVisible(!isVisible);
+                buttonSecondary.setText(isVisible ? "Edytuj należność uczestnika" : "Anuluj edytowanie należności");
+                buttonChange.setVisible(!isVisible);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error initializing StronaGlownaPracownikaView", e);
+        }
     }
 
     private void setTabsFromCourses(Tabs tabs, H3 courseNameField, H5 groupSizeField) {
@@ -143,17 +172,24 @@ public class StronaGlownaPracownikaView extends Composite<VerticalLayout> {
         }
     }
 
+    private void setGridSampleData(Grid<User> grid) {
+
+    }
+
     private void updateCourseDetails(Course course, H3 courseNameField, H5 groupSizeField) {
         courseNameField.setText(course.getCourseName());
         instructorField.setText("Prowadzący: " + course.getTeacher().getFirstName() + " " + course.getTeacher().getLastName());
         priceField.setText("Kwota za miesiąc: " + course.getPrice());
-        //groupSizeField.setText("Ilość osób w grupie: " + course.getUsers().size());
-        // Update other details if necessary
+
+        List<User> users = enrollmentService.getUsersEnrolledInCourse(course);
+
+        groupSizeField.setText("Ilość osób w grupie: " + users.size());
+        grid.setItems(users);
     }
 
-    private void setGridSampleData(Grid<User> grid) {
-        grid.setItems(query -> userService.list(
-                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
-    }
+//    private void setGridSampleData(Grid<User> grid) {
+//        grid.setItems(query -> userService.list(
+//                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+//                .stream());
+//    }
 }

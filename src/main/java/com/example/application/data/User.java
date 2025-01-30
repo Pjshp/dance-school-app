@@ -1,6 +1,8 @@
 package com.example.application.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.javaparser.ast.Node;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -42,4 +46,7 @@ public class User {
     private String childLastName;
     private LocalDate birthDate;
 
+    @JsonBackReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private Set<Enrollment> enrollments;
 }

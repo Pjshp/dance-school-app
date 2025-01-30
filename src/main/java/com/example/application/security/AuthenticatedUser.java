@@ -37,6 +37,11 @@ public class AuthenticatedUser {
         }
     }
 
+    @Transactional
+    public Optional<Long> getAuthenticatedUserId() {
+        return get().map(User::getUserId);
+    }
+
     public void logout() {
         authenticationContext.logout();
     }

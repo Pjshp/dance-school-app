@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -63,5 +64,9 @@ public class UserService {
     public Optional<User> findUserByEmail(String email) {
         // Zmieniamy 'findByUsername' na 'findByEmail'
         return repository.findByEmail(email);
+    }
+
+    public Optional<User> findByIdWithEnrollments(Long id) {
+        return repository.findByIdWithEnrollments(id);
     }
 }

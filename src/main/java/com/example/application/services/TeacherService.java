@@ -27,6 +27,10 @@ public class TeacherService {
         return repository.findById(id);
     }
 
+    public Optional<Teacher> findByLastName(String lastName) {
+        return repository.findByLastName(lastName);
+    }
+
     public Teacher save(Teacher teacher) {
         return repository.save(teacher);
     }
