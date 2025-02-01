@@ -115,16 +115,17 @@ public class DodajKursView extends Composite<VerticalLayout> {
             String name = nameTextField.getValue();
             String day = dayComboBox.getValue();
             LocalTime localTime = timePicker.getValue();
-            String price = priceTextField.getValue();
+            String priceString = priceTextField.getValue();
             String description = descriptionTextArea.getValue();
             Teacher teacher = teacherComboBox.getValue();
 
-            if (name.isEmpty() || day.isEmpty() || localTime == null || price.isEmpty() || description.isEmpty() || teacher == null) {
+            if (name.isEmpty() || day.isEmpty() || localTime == null || priceString.isEmpty() || description.isEmpty() || teacher == null) {
                 Notification.show("Wypełnij wszystkie pola");
                 return;
             }
 
             String time = localTime.toString();
+            double price = Double.parseDouble(priceString);
 
             List<Course> existingCourses = courseService.findAll();
             boolean courseExists = existingCourses.stream()

@@ -21,7 +21,7 @@ public class Course {
     private String courseName;
     private String day;
     private String time;
-    private String price;
+    private double price;
     private String courseDescription;
 
     @ManyToOne
@@ -29,5 +29,5 @@ public class Course {
     private Teacher teacher;
 
     @OneToMany(mappedBy = "course")
-    private Set<Enrollment> enrollments;
+    private List<Enrollment> enrollments;
 }

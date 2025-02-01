@@ -21,7 +21,6 @@ public class Enrollment {
     private Long id;
 
     @ManyToOne
-    @JsonManagedReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -29,7 +28,7 @@ public class Enrollment {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    private String price;
+    private double price;
 
-    //private LocalDate enrollmentDate;
+    private LocalDate enrollmentDate;
 }

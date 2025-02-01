@@ -13,8 +13,13 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -34,6 +39,7 @@ import java.time.format.DateTimeParseException;
 public class FormularzRejestracjiView extends Composite<VerticalLayout> {
 
     private final UserService userService;
+    private final Binder<User> binder = new Binder<>(User.class);
 
     @Autowired
     public FormularzRejestracjiView(UserService userService) {
@@ -63,33 +69,61 @@ public class FormularzRejestracjiView extends Composite<VerticalLayout> {
         layoutColumn2.setMaxWidth("800px");
         layoutColumn2.setHeight("min-content");
 
+        // Bind fields to the User object and add validation
+        binder.forField(firstNameField)
+                .asRequired("Imię jest wymagane")
+                .bind(User::getGuardianFirstName, User::setGuardianFirstName);
+
+        binder.forField(lastNameField)
+                .asRequired("Nazwisko jest wymagane")
+                .bind(User::getGuardianLastName, User::setGuardianLastName);
+
+        binder.forField(emailField)
+                .asRequired("Adres e-mail jest wymagany")
+                .withValidator(new RegexpValidator("Nieprawidłowy adres e-mail", "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
+                .bind(User::getEmail, User::setEmail);
+
+        binder.forField(phoneNumberField)
+                .asRequired("Numer telefonu jest wymagany")
+                .withValidator(new RegexpValidator("Nieprawidłowy format numeru telefonu", "\\d{9}"))
+                .bind(User::getPhone, User::setPhone);
+
+        binder.forField(passwordField)
+                .asRequired("Hasło jest wymagane")
+                .bind(User::getPassword, User::setPassword);
+
+        binder.forField(childFirstNameField)
+                .asRequired("Imię dziecka jest wymagane")
+                .bind(User::getChildFirstName, User::setChildFirstName);
+
+        binder.forField(childLastNameField)
+                .asRequired("Nazwisko dziecka jest wymagane")
+                .bind(User::getChildLastName, User::setChildLastName);
+
+        binder.forField(childBirthDateField)
+                .asRequired("Data urodzenia jest wymagana")
+                .withValidator(date -> {
+                    try {
+                        LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                        return true;
+                    } catch (DateTimeParseException e) {
+                        return false;
+                    }
+                }, "Nieprawidłowy format daty. Użyj formatu dd.MM.yyyy.")
+                .bind(user -> user.getBirthDate() != null ? user.getBirthDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "",
+                        (user, date) -> user.setBirthDate(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         buttonPrimary.addClickListener(event -> {
             User user = new User();
-            user.setGuardianFirstName(firstNameField.getValue());
-            user.setGuardianLastName(lastNameField.getValue());
-            user.setEmail(emailField.getValue());
-            user.setPhone(phoneNumberField.getValue());
-            user.setPassword(passwordField.getValue());
-            user.setChildFirstName(childFirstNameField.getValue());
-            user.setChildLastName(childLastNameField.getValue());
-
-
-
-            // Parsowanie daty urodzenia dziecka
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             try {
-                LocalDate birthDate = LocalDate.parse(childBirthDateField.getValue(), formatter);
-                user.setBirthDate(birthDate);
-            } catch (DateTimeParseException e) {
-                Notification.show("Nieprawidłowy format daty. Użyj formatu dd.MM.yyyy.");
-                return;
+                binder.writeBean(user);
+                user.setRole(Role.USER); // ustawienie domyślnej roli użytkownika
+                userService.register(user);
+                Notification.show("Rejestracja zakończona sukcesem!");
+            } catch (ValidationException e) {
+                Notification.show("Nie udało się zarejestrować. Sprawdź poprawność danych.");
             }
-
-            user.setRole(Role.USER); // ustawienie domyślnej roli użytkownika
-
-            userService.register(user);
-            Notification.show("Rejestracja zakończona sukcesem!");
         });
 
         getContent().add(layoutColumn2);

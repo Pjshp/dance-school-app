@@ -76,9 +76,13 @@ public class StronaGlownaKlientaView extends Composite<VerticalLayout> {
                 H5 h53 = new H5("Godzina: " + course.getTime());
                 h53.setWidth("max-content");
 
+                H5 h55 = new H5("Kwota do zapłaty: " + enrollment.getPrice() + " zł");
+                h55.setWidth("max-content");
+
                 H5 h54 = new H5("Osoba prowadząca: " + course.getTeacher().getFirstName()
                         + " " + course.getTeacher().getLastName());
                 h54.setWidth("max-content");
+
 
                 HorizontalLayout layoutRow = new HorizontalLayout();
                 layoutRow.addClassName(Gap.MEDIUM);
@@ -100,6 +104,7 @@ public class StronaGlownaKlientaView extends Composite<VerticalLayout> {
                 formLayout2Col.add(h5);
                 formLayout2Col.add(h52);
                 formLayout2Col.add(h53);
+                formLayout2Col.add(h55);
                 formLayout2Col.add(h54);
                 layoutColumn2.add(layoutRow);
                 layoutRow.add(buttonPrimary);

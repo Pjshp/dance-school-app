@@ -28,6 +28,10 @@ public class CourseService {
         return repository.findById(id);
     }
 
+    public Optional<Course> findByName(String courseName) {
+        return repository.findByCourseName(courseName);
+    }
+
     public Course save(Course course) {
         return repository.save(course);
     }

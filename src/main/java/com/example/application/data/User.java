@@ -46,7 +46,6 @@ public class User {
     private String childLastName;
     private LocalDate birthDate;
 
-    @JsonBackReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<Enrollment> enrollments;
+    private List<Enrollment> enrollments;
 }
