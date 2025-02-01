@@ -39,7 +39,6 @@ public class User {
     private String guardianFirstName;
     private String guardianLastName;
 
-    @Pattern(regexp = "\\d{9}", message = "Numer telefonu powinien składać się z 9 cyfr")
     private String phone;
 
     private String childFirstName;

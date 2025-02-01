@@ -1,5 +1,6 @@
 package com.example.application.views.dodajkurs;
 
+import com.example.application.data.AgeCategory;
 import com.example.application.data.Course;
 import com.example.application.data.Teacher;
 import com.example.application.services.CourseService;
@@ -34,7 +35,6 @@ import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 import com.vaadin.flow.component.notification.Notification;
 
-
 @PageTitle("Dodaj Kurs")
 @Route("dodaj-kurs")
 @Menu(order = 0, icon = LineAwesomeIconUrl.PLUS_SOLID)
@@ -51,15 +51,13 @@ public class DodajKursView extends Composite<VerticalLayout> {
         H3 h3 = new H3();
         FormLayout formLayout2Col = new FormLayout();
         TextField nameTextField = new TextField();
-        //TextField textField2 = new TextField();
         ComboBox<String> dayComboBox = new ComboBox<>();
-        //DatePicker datePicker = new DatePicker();
         TimePicker timePicker = new TimePicker();
         TextField priceTextField = new TextField();
         TextArea descriptionTextArea = new TextArea();
-        //TextField textField4 = new TextField();
-        //EmailField emailField = new EmailField();
+        ComboBox<AgeCategory> ageCategoryComboBox = new ComboBox<>();
         ComboBox<Teacher> teacherComboBox = new ComboBox<>();
+        TextField limitOfPlacesTextField = new TextField();
         HorizontalLayout layoutRow = new HorizontalLayout();
         Button buttonPrimary = new Button();
         Button buttonSecondary = new Button();
@@ -74,21 +72,38 @@ public class DodajKursView extends Composite<VerticalLayout> {
         h3.setWidth("100%");
         formLayout2Col.setWidth("100%");
         nameTextField.setLabel("Nazwa kursu");
+        nameTextField.setRequired(true);
+        nameTextField.setErrorMessage("Nazwa kursu nie może być pusta");
         dayComboBox.setLabel("Dzień");
-        //textField2.setLabel("Dzień");
-        //datePicker.setLabel("Godzina");
+        dayComboBox.setRequired(true);
+        dayComboBox.setErrorMessage("Wybierz dzień");
         timePicker.setLabel("Godzina");
         timePicker.setMin(LocalTime.of(14, 0));
         timePicker.setMax(LocalTime.of(20, 0));
+        timePicker.setRequired(true);
+        timePicker.setErrorMessage("Wybierz godzinę");
         priceTextField.setLabel("Cena za miesiąc [zł]");
+        priceTextField.setRequired(true);
+        priceTextField.setPattern("\\d+(\\.\\d{1,2})?");
+        priceTextField.setErrorMessage("Podaj prawidłową cenę");
+        limitOfPlacesTextField.setLabel("Limit miejsc");
+        limitOfPlacesTextField.setRequired(true);
+        limitOfPlacesTextField.setPattern("\\d+");
+        limitOfPlacesTextField.setErrorMessage("Podaj prawidłową liczbę");
         descriptionTextArea.setLabel("Opis");
-//        textField4.setLabel("Opis");
-//        textField4.setWidth("100%");
-//        textField4.setHeight("150px");
-        //emailField.setLabel("Opis");
+        descriptionTextArea.setRequired(true);
+        descriptionTextArea.setErrorMessage("Opis nie może być pusty");
+        ageCategoryComboBox.setLabel("Kategoria wiekowa");
+        ageCategoryComboBox.setWidth("min-content");
+        ageCategoryComboBox.setItems(AgeCategory.values());
+        ageCategoryComboBox.setItemLabelGenerator(AgeCategory::getDisplayName);
+        ageCategoryComboBox.setRequired(true);
+        ageCategoryComboBox.setErrorMessage("Wybierz kategorię wiekową");
         teacherComboBox.setLabel("Prowadzący");
         teacherComboBox.setWidth("min-content");
         setTeacherComboBoxData(teacherComboBox);
+        teacherComboBox.setRequired(true);
+        teacherComboBox.setErrorMessage("Wybierz prowadzącego");
         setDayComboBoxData(dayComboBox);
         layoutRow.addClassName(Gap.MEDIUM);
         layoutRow.setWidth("100%");
@@ -105,8 +120,10 @@ public class DodajKursView extends Composite<VerticalLayout> {
         formLayout2Col.add(dayComboBox);
         formLayout2Col.add(timePicker);
         formLayout2Col.add(priceTextField);
-        formLayout2Col.add(descriptionTextArea);
+        formLayout2Col.add(ageCategoryComboBox);
         formLayout2Col.add(teacherComboBox);
+        formLayout2Col.add(limitOfPlacesTextField);
+        formLayout2Col.add(descriptionTextArea);
         layoutColumn2.add(layoutRow);
         layoutRow.add(buttonPrimary);
         layoutRow.add(buttonSecondary);
@@ -117,15 +134,18 @@ public class DodajKursView extends Composite<VerticalLayout> {
             LocalTime localTime = timePicker.getValue();
             String priceString = priceTextField.getValue();
             String description = descriptionTextArea.getValue();
+            AgeCategory ageCategory = ageCategoryComboBox.getValue();
             Teacher teacher = teacherComboBox.getValue();
+            String limitOfPlacesString = limitOfPlacesTextField.getValue();
 
-            if (name.isEmpty() || day.isEmpty() || localTime == null || priceString.isEmpty() || description.isEmpty() || teacher == null) {
+            if (name.isEmpty() || day.isEmpty() || localTime == null || priceString.isEmpty() || description.isEmpty() || ageCategory == null || teacher == null || limitOfPlacesString.isEmpty()) {
                 Notification.show("Wypełnij wszystkie pola");
                 return;
             }
 
             String time = localTime.toString();
             double price = Double.parseDouble(priceString);
+            int limitOfPlaces = Integer.parseInt(limitOfPlacesString);
 
             List<Course> existingCourses = courseService.findAll();
             boolean courseExists = existingCourses.stream()
@@ -142,7 +162,9 @@ public class DodajKursView extends Composite<VerticalLayout> {
             newCourse.setTime(time);
             newCourse.setPrice(price);
             newCourse.setCourseDescription(description);
+            newCourse.setAgeCategory(ageCategory);
             newCourse.setTeacher(teacher);
+            newCourse.setLimitOfPlaces(limitOfPlaces);
 
             courseService.save(newCourse);
             Notification.show("Dodano kurs: " + name);
@@ -152,15 +174,14 @@ public class DodajKursView extends Composite<VerticalLayout> {
             timePicker.clear();
             priceTextField.clear();
             descriptionTextArea.clear();
+            ageCategoryComboBox.clear();
             teacherComboBox.clear();
+            limitOfPlacesTextField.clear();
         });
 
         buttonSecondary.addClickListener(event -> {
             buttonSecondary.getUI().ifPresent(ui -> ui.navigate("strona-glowna-pracownika"));
         });
-    }
-
-    record SampleItem(String value, String label, Boolean disabled) {
     }
 
     private void setTeacherComboBoxData(ComboBox<Teacher> comboBox) {

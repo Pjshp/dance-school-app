@@ -69,4 +69,9 @@ public class UserService {
     public Optional<User> findByIdWithEnrollments(Long id) {
         return repository.findByIdWithEnrollments(id);
     }
+
+    // UserService.java
+    public boolean emailExists(String email) {
+        return repository.findByEmail(email).isPresent();
+    }
 }

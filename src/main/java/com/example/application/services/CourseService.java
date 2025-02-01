@@ -35,4 +35,9 @@ public class CourseService {
     public Course save(Course course) {
         return repository.save(course);
     }
+
+    public void update(Course course) {
+        // Assuming the save method in the repository can handle both insert and update
+        repository.save(course);
+    }
 }

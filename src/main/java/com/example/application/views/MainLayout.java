@@ -4,6 +4,8 @@ import com.example.application.data.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.dodajkurs.DodajKursView;
 import com.example.application.views.dodajprowadzacego.DodajProwadzacegoView;
+import com.example.application.views.edytujdane.EdytujDaneView;
+import com.example.application.views.edytujkurs.EdytujKursView;
 import com.example.application.views.formularzrejestracji.FormularzRejestracjiView;
 import com.example.application.views.listazajec.ListaZajecView;
 import com.example.application.views.login.LoginView;
@@ -82,10 +84,12 @@ public class MainLayout extends AppLayout {
             if ("USER".equals(role)) {
                 nav.addItem(new SideNavItem("Strona Główna Klienta", StronaGlownaKlientaView.class));
                 nav.addItem(new SideNavItem("Lista Zajęć", ListaZajecView.class));
+                nav.addItem(new SideNavItem("Edytuj Dane", EdytujDaneView.class));
             } else if ("STAFF".equals(role)) {
                 nav.addItem(new SideNavItem("Strona Główna Pracownika", StronaGlownaPracownikaView.class));
                 nav.addItem(new SideNavItem("Dodaj kurs", DodajKursView.class));
                 nav.addItem(new SideNavItem("Dodaj prowadzącego", DodajProwadzacegoView.class));
+                nav.addItem(new SideNavItem("Edytuj kurs", EdytujKursView.class));
             }
         } else {
             // Widoki dla niezalogowanych użytkowników

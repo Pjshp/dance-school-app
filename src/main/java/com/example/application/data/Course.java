@@ -23,6 +23,8 @@ public class Course {
     private String time;
     private double price;
     private String courseDescription;
+    private AgeCategory ageCategory;
+    private int limitOfPlaces;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")

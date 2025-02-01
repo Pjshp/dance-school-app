@@ -118,6 +118,10 @@ public class FormularzRejestracjiView extends Composite<VerticalLayout> {
             User user = new User();
             try {
                 binder.writeBean(user);
+                if (userService.emailExists(user.getEmail())) {
+                    Notification.show("Konto użytkownika o takim adresie e-mail już istnieje.");
+                    return;
+                }
                 user.setRole(Role.USER); // ustawienie domyślnej roli użytkownika
                 userService.register(user);
                 Notification.show("Rejestracja zakończona sukcesem!");
